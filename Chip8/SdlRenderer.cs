@@ -45,11 +45,7 @@ namespace Chip8
             }
 
             surface = sdl.GetWindowSurface(window);
-
-            off = sdl.MapRGB(surface->Format, 0, 0, 0);
-            on = sdl.MapRGB(surface->Format, 0, 255, 0);
-
-            sdl.FillRect(surface, null, off);
+            sdl.FillRect(surface, null, sdl.MapRGB(surface->Format, 0, 0, 0));
             sdl.UpdateWindowSurface(window);
 
             return true;

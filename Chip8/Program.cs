@@ -17,6 +17,7 @@ namespace Chip8
                     throw new Exception();
 
                 Emulator emulator = new Emulator(renderer);
+                emulator.LoadRom("roms/");
                 emulator.Run();
             }
         }
