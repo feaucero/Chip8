@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -59,6 +61,8 @@ namespace Chip8
 
         private byte[] Fonts;
 
+        private int InstructionsPerSecond = 700;
+
         public Emulator(SdlRenderer renderer)
         {
             _renderer = renderer;
@@ -84,8 +88,6 @@ namespace Chip8
             var rom = File.ReadAllBytes(romPath);
 
             Array.Copy(rom, 0, Memory, ProgramMemory, rom.Length);
-
-            Memory = new byte[4096];
         }
 
         private void SetupFonts()
@@ -118,11 +120,29 @@ namespace Chip8
 
         public void Run()
         {
-            //Setar o ciclo...
-
-            while(!_renderer.Quit)
+            while (!_renderer.Quit)
             {
-                _renderer.Update();
+                var watch = Stopwatch.StartNew();
+
+                Console.WriteLine("Buscando");
+                var instructions = 0;
+                for (int seconds = 0; seconds < 60; seconds++)
+                {
+                    for (int i = 0; i < InstructionsPerSecond / 60; i++)
+                    {
+
+                        _renderer.Update();
+                        instructions++;
+                    }
+
+                    if (watch.ElapsedMilliseconds <= 1000)
+                    {
+                        Thread.Sleep(1000 - (int)watch.ElapsedMilliseconds);
+                        Console.WriteLine("Atrasando");
+                    }
+                }
+
+                Console.WriteLine($"Finalizando {instructions} ciclos em {watch.ElapsedMilliseconds}ms");
             }
         }
     }
