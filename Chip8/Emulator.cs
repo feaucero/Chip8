@@ -133,61 +133,15 @@ namespace Chip8
                     {
                         // Fetch
                         var firstInstruction = Memory[PC];
-                        var secondInstruction = Memory[PC+1];
+                        var secondInstruction = Memory[PC + 1];
                         PC += 2;
 
                         var instruction = InstructionHelper.Decode(firstInstruction, secondInstruction);
 
-                        switch (instruction.Opcode)
-                        {
-                            case Opcode.CLS:
-                                _renderer.ClearScreen();
-                                break;
-                            case Opcode.JP_NNN:
-                                PC = instruction.NNN;
-                                break;
-                            case Opcode.LD_VX_NN:
-                                V[instruction.X] = instruction.NN;
-                                break;
-                            case Opcode.ADD_VX_NN:
-                                V[instruction.X] += instruction.NN;
-                                break;
-                            case Opcode.LD_I:
-                                I = instruction.NNN;
-                                break;
-                            case Opcode.DRW_VX_VY_N:
-                                //Console.WriteLine("Desenhei!");
-                                var height = instruction.N;
-                                V[0xF] = 0;
+                        Execute(instruction);
 
-                                for (int row = 0; row < height; row++)
-                                {
-                                    byte rowData = Memory[I + row];
-                                    for (int column = 0; column < 8; column++)
-                                    {
-                                        var bitIndex = 7 - column;
-                                        var shifted = 1 << bitIndex;
-                                        var pixelStatus = (shifted & rowData) == shifted;
-
-                                        var x = V[instruction.X] + column;
-                                        var y = V[instruction.Y] + row;
-
-                                        var oldPixelStatus = _renderer.GetPixel(x, y);
-
-                                        pixelStatus = pixelStatus ^ oldPixelStatus;
-
-                                        V[0xf] = (ushort)(!pixelStatus ? 1 : 0);
-
-                                        _renderer.SetPixel(x, y, pixelStatus);
-                                    }
-                                }
-                                break;
-                            default:
-                                break;
-                        }
-
-                        // Execute
                         _renderer.Update();
+
                         instructions++;
                     }
 
@@ -199,6 +153,56 @@ namespace Chip8
                 }
 
                 //Console.WriteLine($"Finalizando {instructions} ciclos em {watch.ElapsedMilliseconds}ms");
+            }
+        }
+
+        private void Execute(Instruction instruction)
+        {
+            switch (instruction.Opcode)
+            {
+                case Opcode.CLS:
+                    _renderer.ClearScreen();
+                    break;
+                case Opcode.JP_NNN:
+                    PC = instruction.NNN;
+                    break;
+                case Opcode.LD_VX_NN:
+                    V[instruction.X] = instruction.NN;
+                    break;
+                case Opcode.ADD_VX_NN:
+                    V[instruction.X] += instruction.NN;
+                    break;
+                case Opcode.LD_I:
+                    I = instruction.NNN;
+                    break;
+                case Opcode.DRW_VX_VY_N:
+                    var height = instruction.N;
+                    V[0xF] = 0;
+
+                    for (int row = 0; row < height; row++)
+                    {
+                        byte rowData = Memory[I + row];
+                        for (int column = 0; column < 8; column++)
+                        {
+                            var bitIndex = 7 - column;
+                            var shifted = 1 << bitIndex;
+                            var pixelStatus = (shifted & rowData) == shifted;
+
+                            var x = (V[instruction.X] + column) & 63;
+                            var y = (V[instruction.Y] + row) & 31;
+
+                            var oldPixelStatus = _renderer.GetPixel(x, y);
+
+                            pixelStatus = pixelStatus ^ oldPixelStatus;
+
+                            V[0xf] = (ushort)(!pixelStatus ? 1 : 0);
+
+                            _renderer.SetPixel(x, y, pixelStatus);
+                        }
+                    }
+                    break;
+                default:
+                    break;
             }
         }
     }
