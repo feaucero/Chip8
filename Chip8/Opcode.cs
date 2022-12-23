@@ -5,20 +5,21 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Chip8
+
 {
     public enum Opcode
     {
         CLS, //00E0
         //RET,
-        JP, //1nnn
+        JP_NNN, //1nnn
         //CALL, //2nnn
         //SEVX, //3xkk
         //SNE, //4xkk
         //SEVXVY, //5xy0
-        LDVX, //6xkk
-        ADD, //7xkk
-        LDI, //Annn
-        DRW, //Dxyn
+        LD_VX_NN, //6xkk
+        ADD_VX_NN, //7xkk
+        LD_I, //Annn
+        DRW_VX_VY_N, //Dxyn
 
     }
 }

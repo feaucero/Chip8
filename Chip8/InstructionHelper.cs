@@ -12,7 +12,7 @@ namespace Chip8
         {
             var fetchedInstruction = (firstInstruction << 8) + secondInstruction;
 
-            Instruction instruction = new Instruction(fetchedInstruction);
+            Instruction instruction = new Instruction((ushort)fetchedInstruction);
 
             // CLR
             if (instruction.Data == 0x00E0) 
@@ -21,24 +21,22 @@ namespace Chip8
                 return instruction;
             }
 
-            Opcode opcode = Opcode.CLS;
-
             switch (instruction.FirstNibble)
             {
                 case 0x1:
-                    instruction.Opcode = Opcode.JP;
+                    instruction.Opcode = Opcode.JP_NNN;
                     break;
                 case 0x6:
-                    instruction.Opcode = Opcode.LDVX;
+                    instruction.Opcode = Opcode.LD_VX_NN;
                     break;
                 case 0x7:
-                    instruction.Opcode = Opcode.ADD;
+                    instruction.Opcode = Opcode.ADD_VX_NN;
                     break;
                 case 0xA:
-                    instruction.Opcode = Opcode.LDI;
+                    instruction.Opcode = Opcode.LD_I;
                     break;
                 case 0xD:
-                    instruction.Opcode = Opcode.DRW;
+                    instruction.Opcode = Opcode.DRW_VX_VY_N;
                     break;
             }
 

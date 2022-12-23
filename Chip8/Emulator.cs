@@ -123,8 +123,9 @@ namespace Chip8
             while (!_renderer.Quit)
             {
                 var watch = Stopwatch.StartNew();
+                _renderer.Redraw = false;
 
-                Console.WriteLine("Buscando");
+                //Console.WriteLine("Buscando");
                 var instructions = 0;
                 for (int seconds = 0; seconds < 60; seconds++)
                 {
@@ -140,16 +141,46 @@ namespace Chip8
                         switch (instruction.Opcode)
                         {
                             case Opcode.CLS:
+                                _renderer.ClearScreen();
                                 break;
-                            case Opcode.JP:
+                            case Opcode.JP_NNN:
+                                PC = instruction.NNN;
                                 break;
-                            case Opcode.LDVX:
+                            case Opcode.LD_VX_NN:
+                                V[instruction.X] = instruction.NN;
                                 break;
-                            case Opcode.ADD:
+                            case Opcode.ADD_VX_NN:
+                                V[instruction.X] += instruction.NN;
                                 break;
-                            case Opcode.LDI:
+                            case Opcode.LD_I:
+                                I = instruction.NNN;
                                 break;
-                            case Opcode.DRW:
+                            case Opcode.DRW_VX_VY_N:
+                                //Console.WriteLine("Desenhei!");
+                                var height = instruction.N;
+                                V[0xF] = 0;
+
+                                for (int row = 0; row < height; row++)
+                                {
+                                    byte rowData = Memory[I + row];
+                                    for (int column = 0; column < 8; column++)
+                                    {
+                                        var bitIndex = 7 - column;
+                                        var shifted = 1 << bitIndex;
+                                        var pixelStatus = (shifted & rowData) == shifted;
+
+                                        var x = V[instruction.X] + column;
+                                        var y = V[instruction.Y] + row;
+
+                                        var oldPixelStatus = _renderer.GetPixel(x, y);
+
+                                        pixelStatus = pixelStatus ^ oldPixelStatus;
+
+                                        V[0xf] = (ushort)(!pixelStatus ? 1 : 0);
+
+                                        _renderer.SetPixel(x, y, pixelStatus);
+                                    }
+                                }
                                 break;
                             default:
                                 break;
@@ -163,11 +194,11 @@ namespace Chip8
                     if (watch.ElapsedMilliseconds <= 1000)
                     {
                         Thread.Sleep(1000 - (int)watch.ElapsedMilliseconds);
-                        Console.WriteLine("Atrasando");
+                        //Console.WriteLine("Atrasando");
                     }
                 }
 
-                Console.WriteLine($"Finalizando {instructions} ciclos em {watch.ElapsedMilliseconds}ms");
+                //Console.WriteLine($"Finalizando {instructions} ciclos em {watch.ElapsedMilliseconds}ms");
             }
         }
     }
