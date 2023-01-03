@@ -71,7 +71,7 @@ namespace Chip8
 
         private Stopwatch _timersStopWatch;
 
-        private bool _showLog = false;
+        private bool _showLog = true;
 
         public Emulator(SdlRenderer renderer)
         {
@@ -312,8 +312,6 @@ namespace Chip8
                     }
                     break;
                 case Opcode.SKNP_VX:
-                    Console.WriteLine($"CurrentKey = {currentKey}");
-                    Console.WriteLine($"PC = {PC}");
                     if (!currentKey.HasValue || currentKey != V[instruction.X])
                     {
                         PC += 2;

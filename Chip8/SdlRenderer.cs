@@ -88,25 +88,6 @@ namespace Chip8
             Console.Beep();
         }
 
-        //string DebugScreen(bool[,] screen)
-        //{
-        //    var builder = new StringBuilder();
-        //    builder.AppendLine();
-        //    builder.AppendLine("┌────────────────────────────────────────────────────────────────┐");
-        //    for (int y = 0; y < 32; y++)
-        //    {
-        //        builder.Append('│');
-        //        for (int x = 0; x < 64; x++)
-        //        {
-        //            builder.Append(screen[x, y] ? '█' : ' ');
-        //        }
-        //        builder.Append('│');
-        //        builder.AppendLine();
-        //    }
-        //    builder.AppendLine("└────────────────────────────────────────────────────────────────┘");
-        //    return builder.ToString();
-        //}
-
         public void Update()
         {
             if(Redraw)
