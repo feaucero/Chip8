@@ -18,7 +18,7 @@ namespace Chip8
                     throw new Exception();
 
                 Emulator emulator = new Emulator(renderer);
-                emulator.LoadRom("roms/IBM Logo.ch8");
+                emulator.LoadRom("roms/Tetris [Fran Dachille, 1991].ch8");
                 emulator.Run();
             }
         }
